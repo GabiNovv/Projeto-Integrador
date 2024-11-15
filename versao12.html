@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerenciador de Estoques</title>
+  <style>
+    /* Base styles */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      color: #2c3e50;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      margin: 20px 0;
+      font-size: 2.5rem;
+      color: #34495e;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Form styles */
+    form {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 600px;
+      margin: 20px;
+    }
+
+    form label {
+      display: block;
+      font-weight: bold;
+      margin: 10px 0 5px;
+    }
+
+    form select,
+    form input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+
+    form button {
+      background-color: #27ae60;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.3s;
+    }
+
+    form button:hover {
+      background-color: #219150;
+    }
+
+    /* Section styles */
+    .stock-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+      max-width: 1200px;
+      margin: 20px;
+    }
+
+    .section {
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin: 15px;
+      padding: 20px;
+      width: calc(33% - 30px);
+      min-width: 250px;
+      box-sizing: border-box;
+    }
+
+    .section h3 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+      color: #2c3e50;
+      text-align: center;
+    }
+
+    .section ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .section li {
+      background: #ecf0f1;
+      margin: 10px 0;
+      padding: 10px 15px;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .section li span {
+      font-size: 0.9rem;
+      color: #7f8c8d;
+    }
+
+    /* Button styles */
+    button {
+      padding: 8px 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.1s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+
+    button:active {
+      transform: scale(1);
+    }
+
+    .alert {
+      background-color: #e74c3c;
+      color: white;
+      font-weight: bold;
+      padding: 5px 10px;
+      border-radius: 5px;
+      margin-left: 10px;
+    }
+
+    .alert span {
+      font-size: 0.8rem;
+    }
+
+    .malfunction {
+      background-color: #e67e22;
+      color: white;
+    }
+
+    .fix {
+      background-color: #3498db;
+      color: white;
+    }
+
+    .use {
+      background-color: #9b59b6;
+      color: white;
+    }
+
+    .unload {
+      background-color: #2ecc71;
+      color: white;
+    }
+
+    .deliver {
+      background-color: #f39c12;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>Gerenciador de Estoques</h1>
+  <form id="productForm">
+    <label for="locationSelect">Local:</label>
+    <select id="locationSelect" required>
+      <option value="1">Ambulância 1</option>
+      <option value="2">Ambulância 2</option>
+      <option value="3">Ambulância 3</option>
+      <option value="4">Ambulância 4</option>
+      <option value="5">Ambulância 5</option>
+      <option value="hospital">Hospital</option>
+    </select>
+    <label for="productName">Nome do Produto:</label>
+    <select id="productName" required>
+      <option>Kit Sonda Nasogástrica</option>
+      <option>Kit para Partos</option>
+      <option>Kit para Pequenas Cirurgias</option>
+      <option>Kit para Drenagem de Tórax</option>
+      <option>Pacotes de Gaze Estéril</option>
+      <option>Rolos de Ataduras</option>
+      <option>Compressas Cirúrgicas Estéreis</option>
+      <option>Esfigmomanômetro Adulto/Infantil</option>
+      <option>Esparadrapo</option>
+      <option>Tesoura Reta com Ponta Romba</option>
+      <option>Estetoscópio</option>
+      <option>Laringoscópio</option>
+      <option>Ressuscitador Manual Adulto/Infantil (AMBU)</option>
+      <option>Cânulas Oro-Faríngeas de Tamanhos Variados</option>
+      <option>Cateteres para Oxigenação e Aspiração de Vários Tamanhos</option>
+      <option>Circuito de Ventilação Mecânica</option>
+      <option>Máscara cirúrgica</option>
+      <option>Máscara facial</option>
+      <option>Aventais</option>
+      <option>Luvas descartáveis</option>
+      <option>Óculos de proteção</option>
+      <option>Caixa de perfurocortante</option>
+      <option>Morfina</option>
+    </select>
+    <label for="quantity">Quantidade:</label>
+    <input type="number" id="quantity" min="1" required>
+    <label for="expiryDate">Data de Validade:</label>
+    <input type="date" id="expiryDate" required>
+    <button type="submit">Adicionar Produto</button>
+  </form>
+  <div class="stock-container">
+    <div id="ambulancesContainer"></div>
+    <div id="hospitalContainer">
+      <h3>Hospital</h3>
+      <ul id="hospital"></ul>
+    </div>
+  </div>
+  <script>
+    const inventories = {
+      1: { fixed: [], products: [] },
+      2: { fixed: [], products: [] },
+      3: { fixed: [], products: [] },
+      4: { fixed: [], products: [] },
+      5: { fixed: [], products: [] },
+      hospital: []
+    };
+
+    // Adicionando itens fixos às ambulâncias
+    for (let i = 1; i <= 5; i++) {
+      inventories[i].fixed = [
+        { name: 'Desfibrilador', alert: false },
+        { name: 'Monitor de sinais vitais', alert: false },
+        { name: 'Ventilador', alert: false }
+      ];
+    }
+
+    function renderProducts() {
+      const ambulancesContainer = document.getElementById('ambulancesContainer');
+      ambulancesContainer.innerHTML = '';
+
+      for (let i = 1; i <= 5; i++) {
+        const section = document.createElement('div');
+        section.classList.add('section');
+        const title = document.createElement('h3');
+        title.textContent = `Ambulância ${i}`;
+        const fixedList = document.createElement('ul');
+        inventories[i].fixed.forEach((item) => {
+          const li = document.createElement('li');
+          li.textContent = item.name;
+          if (item.alert) {
+            const alertSpan = document.createElement('span');
+            alertSpan.textContent = 'Mal Funcionamento';
+            alertSpan.classList.add('alert');
+            li.appendChild(alertSpan);
+
+            const fixButton = document.createElement('button');
+            fixButton.textContent = 'Fixado';
+            fixButton.addEventListener('click', () => {
+              if (confirm('Confirmar que o produto foi fixado?')) {
+                item.alert = false;
+                renderProducts();
+              }
+            });
+            li.appendChild(fixButton);
+          } else {
+            const malfunctionButton = document.createElement('button');
+            malfunctionButton.textContent = 'Mal Funcionamento';
+            malfunctionButton.addEventListener('click', () => {
+              item.alert = true;
+              renderProducts();
+            });
+            li.appendChild(malfunctionButton);
+          }
+          fixedList.appendChild(li);
+        });
+
+        const productList = document.createElement('ul');
+        inventories[i].products.forEach((product, index) => {
+          const li = document.createElement('li');
+          li.textContent = `${product.name} - ${product.quantity} unidades (Válido até: ${product.expiryDate})`;
+
+          const useButton = document.createElement('button');
+          useButton.textContent = 'Gasto';
+          useButton.addEventListener('click', () => {
+            const spent = parseInt(prompt('Quantas unidades foram gastas?'), 10);
+            if (spent > 0 && spent <= product.quantity) {
+              product.quantity -= spent;
+              if (product.quantity === 0) inventories[i].products.splice(index, 1);
+              renderProducts();
+            }
+          });
+          li.appendChild(useButton);
+
+          const unloadButton = document.createElement('button');
+          unloadButton.textContent = 'Descarregar';
+          unloadButton.addEventListener('click', () => {
+            inventories.hospital.push(product);
+            inventories[i].products.splice(index, 1);
+            renderProducts();
+          });
+          li.appendChild(unloadButton);
+
+          productList.appendChild(li);
+        });
+
+        section.appendChild(title);
+        section.appendChild(document.createElement('h4').appendChild(document.createTextNode('Itens Fixos')));
+        section.appendChild(fixedList);
+        section.appendChild(document.createElement('h4').appendChild(document.createTextNode('Produtos')));
+        section.appendChild(productList);
+        ambulancesContainer.appendChild(section);
+      }
+
+      const hospitalList = document.getElementById('hospital');
+      hospitalList.innerHTML = '';
+      inventories.hospital.forEach((product, index) => {
+        const li = document.createElement('li');
+        li.textContent = `${product.name} - ${product.quantity} unidades (Válido até: ${product.expiryDate})`;
+
+        const deliverButton = document.createElement('button');
+        deliverButton.textContent = 'Entregar';
+        deliverButton.addEventListener('click', () => {
+          const ambulance = prompt('Para qual ambulância entregar? (1-5)');
+          if (ambulance >= 1 && ambulance <= 5) {
+            inventories[ambulance].products.push(product);
+            inventories.hospital.splice(index, 1);
+            renderProducts();
+          }
+        });
+        li.appendChild(deliverButton);
+        hospitalList.appendChild(li);
+      });
+    }
+
+    document.getElementById('productForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+      const location = document.getElementById('locationSelect').value;
+      const productName = document.getElementById('productName').value;
+      const quantity = parseInt(document.getElementById('quantity').value, 10);
+      const expiryDate = document.getElementById('expiryDate').value;
+
+      inventories[location].products.push({ name: productName, quantity, expiryDate });
+      renderProducts();
+    });
+
+    renderProducts();
+  </script>
+</body>
+</html>

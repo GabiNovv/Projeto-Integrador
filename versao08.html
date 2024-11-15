@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerenciador de Estoques - Ambulâncias e Hospital</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f4f4f9;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    h2, h3 {
+      color: #34495e;
+    }
+    form {
+      background-color: #ecf0f1;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      max-width: 600px;
+      margin: 20px auto;
+    }
+    label {
+      font-weight: bold;
+      margin-right: 10px;
+    }
+    input, select, button {
+      margin: 10px 0;
+      padding: 8px;
+      border: 1px solid #bdc3c7;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      background-color: #ecf0f1;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .expired {
+      color: red;
+      font-weight: bold;
+    }
+    .near-expiration {
+      color: orange;
+      font-weight: bold;
+    }
+    .stock-container {
+      margin: 20px auto;
+      max-width: 800px;
+    }
+    .stock-section {
+      margin-bottom: 30px;
+    }
+    .stock-section h3 {
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Gerenciador de Estoques</h1>
+
+  <h2>Adicionar Produto</h2>
+  <form id="productForm">
+    <label for="locationSelect">Local:</label>
+    <select id="locationSelect" required>
+      <option value="1">Ambulância 1</option>
+      <option value="2">Ambulância 2</option>
+      <option value="3">Ambulância 3</option>
+      <option value="4">Ambulância 4</option>
+      <option value="5">Ambulância 5</option>
+      <option value="hospital">Hospital</option>
+    </select>
+
+    <label for="productName">Nome do Produto:</label>
+    <select id="productName" required>
+      <option>Kit Sonda Nasogástrica</option>
+      <option>Kit para Partos</option>
+      <option>Kit para Pequenas Cirurgias</option>
+      <option>Kit para Drenagem de Tórax</option>
+      <option>Pacotes de Gaze Estéril</option>
+      <option>Rolos de Ataduras</option>
+      <option>Compressas Cirúrgicas Estéreis</option>
+      <option>Esfigmomanômetro Adulto/Infantil</option>
+      <option>Esparadrapo</option>
+      <option>Tesoura Reta com Ponta Romba</option>
+      <option>Estetoscópio</option>
+      <option>Laringoscópio</option>
+      <option>Ressuscitador Manual Adulto/Infantil (AMBU)</option>
+      <option>Cânulas Oro-Faríngeas de Tamanhos Variados</option>
+      <option>Cateteres para Oxigenação e Aspiração de Vários Tamanhos</option>
+      <option>Circuito de Ventilação Mecânica</option>
+      <option>Máscara cirúrgica</option>
+      <option>Máscara facial</option>
+      <option>Aventais</option>
+      <option>Luvas descartáveis</option>
+      <option>Óculos de proteção</option>
+      <option>Caixa de perfurocortante</option>
+      <option>Morfina</option>
+    </select>
+    
+    <label for="quantity">Quantidade:</label>
+    <input type="number" id="quantity" min="1" required>
+    
+    <label for="expiryDate">Data de Validade:</label>
+    <input type="date" id="expiryDate" required>
+    
+    <button type="submit">Adicionar Produto</button>
+  </form>
+
+  <div class="stock-container">
+    <div class="stock-section">
+      <h3>Ambulância 1</h3>
+      <ul id="ambulance1"></ul>
+    </div>
+    <div class="stock-section">
+      <h3>Ambulância 2</h3>
+      <ul id="ambulance2"></ul>
+    </div>
+    <div class="stock-section">
+      <h3>Ambulância 3</h3>
+      <ul id="ambulance3"></ul>
+    </div>
+    <div class="stock-section">
+      <h3>Ambulância 4</h3>
+      <ul id="ambulance4"></ul>
+    </div>
+    <div class="stock-section">
+      <h3>Ambulância 5</h3>
+      <ul id="ambulance5"></ul>
+    </div>
+    <div class="stock-section">
+      <h3>Hospital</h3>
+      <ul id="hospital"></ul>
+    </div>
+  </div>
+
+  <script>
+    const inventories = {
+      1: [{ name: 'Desfibrilador', quantity: 1 }, { name: 'Monitor de sinais vitais', quantity: 1 }, { name: 'Ventilador', quantity: 1 }],
+      2: [{ name: 'Desfibrilador', quantity: 1 }, { name: 'Monitor de sinais vitais', quantity: 1 }, { name: 'Ventilador', quantity: 1 }],
+      3: [{ name: 'Desfibrilador', quantity: 1 }, { name: 'Monitor de sinais vitais', quantity: 1 }, { name: 'Ventilador', quantity: 1 }],
+      4: [{ name: 'Desfibrilador', quantity: 1 }, { name: 'Monitor de sinais vitais', quantity: 1 }, { name: 'Ventilador', quantity: 1 }],
+      5: [{ name: 'Desfibrilador', quantity: 1 }, { name: 'Monitor de sinais vitais', quantity: 1 }, { name: 'Ventilador', quantity: 1 }],
+      hospital: []
+    };
+
+    function renderProducts() {
+      for (const [key, inventory] of Object.entries(inventories)) {
+        const productList = document.getElementById(key === 'hospital' ? 'hospital' : `ambulance${key}`);
+        productList.innerHTML = '';
+
+        const today = new Date();
+        inventory.forEach((product, index) => {
+          const productItem = document.createElement('li');
+          const isEssential = ['Desfibrilador', 'Monitor de sinais vitais', 'Ventilador'].includes(product.name);
+
+          if (product.expiryDate) {
+            const expiryDate = new Date(product.expiryDate);
+            const daysDiff = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+            productItem.textContent = `${product.name} (${product.quantity} Unidades)`;
+
+            if (daysDiff < 0) {
+              productItem.classList.add('expired');
+              productItem.textContent += ` - Expirado em ${expiryDate.toLocaleDateString()}`;
+
+              const discardButton = document.createElement('button');
+              discardButton.textContent = 'Confirmar Descarte';
+              discardButton.addEventListener('click', () => {
+                inventory.splice(index, 1);
+                renderProducts();
+              });
+              productItem.appendChild(discardButton);
+            }
+          } else {
+            productItem.textContent = `${product.name} (${product.quantity} Unidades)`;
+          }
+
+          if (!isEssential) {
+            const removeButton = document.createElement('button');
+            removeButton.textContent = 'Remover';
+            removeButton.addEventListener('click', () => {
+              const removeQty = prompt('Digite a quantidade a ser removida:');
+              const qty = parseInt(removeQty);
+
+              if (!isNaN(qty) && qty > 0 && qty <= product.quantity) {
+                product.quantity -= qty;
+                if (product.quantity === 0) inventory.splice(index, 1);
+                renderProducts();
+              } else {
+                alert('Quantidade inválida.');
+              }
+            });
+            productItem.appendChild(removeButton);
+          }
+
+          productList.appendChild(productItem);
+        });
+      }
+    }
+
+    document.getElementById('productForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const locationSelect = document.getElementById('locationSelect').value;
+      const productName = document.getElementById('productName').value;
+      const quantity = parseInt(document.getElementById('quantity').value);
+      const expiryDate = document.getElementById('expiryDate').value;
+
+      inventories[locationSelect].push({ name: productName, quantity, expiryDate });
+      renderProducts();
+
+      document.getElementById('quantity').value = '';
+      document.getElementById('expiryDate').value = '';
+    });
+
+    renderProducts();
+  </script>
+</body>
+</html>

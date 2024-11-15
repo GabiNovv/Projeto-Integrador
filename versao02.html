@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerenciador de Estoques das Ambulâncias</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .expired {
+      color: red;
+      font-weight: bold;
+    }
+    .near-expiration {
+      color: orange;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Gerenciador de Estoques das Ambulâncias</h1>
+
+  <h2>Adicionar Produto</h2>
+  <form id="productForm">
+    <label for="ambulanceSelect">Ambulância:</label>
+    <select id="ambulanceSelect" required>
+      <option value="1">Ambulância 1</option>
+      <option value="2">Ambulância 2</option>
+      <option value="3">Ambulância 3</option>
+    </select>
+
+    <label for="productName">Nome do Produto:</label>
+    <input type="text" id="productName" required>
+    
+    <label for="expiryDate">Data de Validade:</label>
+    <input type="date" id="expiryDate" required>
+    
+    <button type="submit">Adicionar Produto</button>
+  </form>
+
+  <h2>Estoques das Ambulâncias</h2>
+
+  <h3>Ambulância 1</h3>
+  <ul id="ambulance1"></ul>
+
+  <h3>Ambulância 2</h3>
+  <ul id="ambulance2"></ul>
+
+  <h3>Ambulância 3</h3>
+  <ul id="ambulance3"></ul>
+
+  <script>
+    const ambulances = {
+      1: [],
+      2: [],
+      3: []
+    };
+
+    function renderProducts() {
+      for (let i = 1; i <= 3; i++) {
+        const productList = document.getElementById(`ambulance${i}`);
+        productList.innerHTML = '';
+
+        const today = new Date();
+        ambulances[i].forEach((product, index) => {
+          const productItem = document.createElement('li');
+          const expiryDate = new Date(product.expiryDate);
+
+          // Verificar a validade
+          const timeDiff = expiryDate - today;
+          const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+          if (daysDiff < 0) {
+            productItem.classList.add('expired');
+            productItem.textContent = `${product.name} - Expirado em ${expiryDate.toLocaleDateString()}`;
+          } else if (daysDiff <= 2) {
+            productItem.classList.add('near-expiration');
+            productItem.textContent = `${product.name} - Próximo da validade (${expiryDate.toLocaleDateString()})`;
+          } else {
+            productItem.textContent = `${product.name} - Válido até ${expiryDate.toLocaleDateString()}`;
+          }
+
+          // Botão de remoção
+          const removeButton = document.createElement('button');
+          removeButton.textContent = 'Remover';
+          removeButton.style.marginLeft = '10px';
+          removeButton.addEventListener('click', () => {
+            ambulances[i].splice(index, 1);
+            renderProducts();
+          });
+
+          productItem.appendChild(removeButton);
+          productList.appendChild(productItem);
+        });
+      }
+    }
+
+    document.getElementById('productForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const ambulanceSelect = document.getElementById('ambulanceSelect').value;
+      const productName = document.getElementById('productName').value;
+      const expiryDate = document.getElementById('expiryDate').value;
+
+      // Adicionar o produto ao estoque da ambulância selecionada
+      ambulances[ambulanceSelect].push({ name: productName, expiryDate });
+      renderProducts();
+
+      // Limpar o formulário
+      document.getElementById('productName').value = '';
+      document.getElementById('expiryDate').value = '';
+    });
+
+    // Renderizar os estoques iniciais
+    renderProducts();
+  </script>
+</body>
+</html>

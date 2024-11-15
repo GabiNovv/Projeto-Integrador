@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerenciador de Produtos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .expired {
+      color: red;
+      font-weight: bold;
+    }
+    .near-expiration {
+      color: orange;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Gerenciador de Produtos</h1>
+
+  <h2>Adicionar Produto</h2>
+  <form id="productForm">
+    <label for="productName">Nome do Produto:</label>
+    <input type="text" id="productName" required>
+    <label for="expiryDate">Data de Validade:</label>
+    <input type="date" id="expiryDate" required>
+    <button type="submit">Adicionar Produto</button>
+  </form>
+
+  <h2>Lista de Produtos</h2>
+  <ul id="productList"></ul>
+
+  <script>
+    const products = [];
+
+    function renderProducts() {
+      const productList = document.getElementById('productList');
+      productList.innerHTML = '';
+
+      const today = new Date();
+      products.forEach(product => {
+        const productItem = document.createElement('li');
+        const expiryDate = new Date(product.expiryDate);
+
+        // Verificar a validade
+        const timeDiff = expiryDate - today;
+        const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+        if (daysDiff < 0) {
+          productItem.classList.add('expired');
+          productItem.textContent = `${product.name} - Expirado em ${expiryDate.toLocaleDateString()}`;
+        } else if (daysDiff <= 2) {
+          productItem.classList.add('near-expiration');
+          productItem.textContent = `${product.name} - Próximo da validade (${expiryDate.toLocaleDateString()})`;
+        } else {
+          productItem.textContent = `${product.name} - Válido até ${expiryDate.toLocaleDateString()}`;
+        }
+
+        productList.appendChild(productItem);
+      });
+    }
+
+    document.getElementById('productForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const productName = document.getElementById('productName').value;
+      const expiryDate = document.getElementById('expiryDate').value;
+
+      // Adicionar o produto à lista
+      products.push({ name: productName, expiryDate });
+      renderProducts();
+
+      // Limpar o formulário
+      document.getElementById('productName').value = '';
+      document.getElementById('expiryDate').value = '';
+    });
+
+    // Renderizar a lista de produtos inicial
+    renderProducts();
+  </script>
+</body>
+</html>

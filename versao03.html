@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerenciador de Estoques - Ambulâncias e Farmácia</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .expired {
+      color: red;
+      font-weight: bold;
+    }
+    .near-expiration {
+      color: orange;
+      font-weight: bold;
+    }
+    button {
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Gerenciador de Estoques</h1>
+
+  <h2>Adicionar Produto</h2>
+  <form id="productForm">
+    <label for="locationSelect">Local:</label>
+    <select id="locationSelect" required>
+      <option value="1">Ambulância 1</option>
+      <option value="2">Ambulância 2</option>
+      <option value="3">Ambulância 3</option>
+      <option value="pharmacy">Farmácia</option>
+    </select>
+
+    <label for="productName">Nome do Produto:</label>
+    <input type="text" id="productName" required>
+    
+    <label for="expiryDate">Data de Validade:</label>
+    <input type="date" id="expiryDate" required>
+    
+    <button type="submit">Adicionar Produto</button>
+  </form>
+
+  <h2>Estoques</h2>
+
+  <h3>Ambulância 1</h3>
+  <ul id="ambulance1"></ul>
+
+  <h3>Ambulância 2</h3>
+  <ul id="ambulance2"></ul>
+
+  <h3>Ambulância 3</h3>
+  <ul id="ambulance3"></ul>
+
+  <h3>Farmácia</h3>
+  <ul id="pharmacy"></ul>
+
+  <script>
+    const inventories = {
+      1: [],
+      2: [],
+      3: [],
+      pharmacy: []
+    };
+
+    function renderProducts() {
+      for (const [key, inventory] of Object.entries(inventories)) {
+        const productList = document.getElementById(key === 'pharmacy' ? 'pharmacy' : `ambulance${key}`);
+        productList.innerHTML = '';
+
+        const today = new Date();
+        inventory.forEach((product, index) => {
+          const productItem = document.createElement('li');
+          const expiryDate = new Date(product.expiryDate);
+
+          // Verificar a validade
+          const timeDiff = expiryDate - today;
+          const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+          if (daysDiff < 0) {
+            productItem.classList.add('expired');
+            productItem.textContent = `${product.name} - Expirado em ${expiryDate.toLocaleDateString()}`;
+          } else if (daysDiff <= 2) {
+            productItem.classList.add('near-expiration');
+            productItem.textContent = `${product.name} - Próximo da validade (${expiryDate.toLocaleDateString()})`;
+          } else {
+            productItem.textContent = `${product.name} - Válido até ${expiryDate.toLocaleDateString()}`;
+          }
+
+          // Botão de remoção ou interação
+          const actionButton = document.createElement('button');
+          if (key === 'pharmacy') {
+            actionButton.textContent = 'Entregar';
+            actionButton.addEventListener('click', () => {
+              const ambulanceChoice = prompt("Digite o número da ambulância para entregar (1, 2 ou 3):");
+              if (inventories[ambulanceChoice]) {
+                inventories[ambulanceChoice].push(product);
+                inventory.splice(index, 1);
+                renderProducts();
+              } else {
+                alert("Número de ambulância inválido!");
+              }
+            });
+          } else {
+            actionButton.textContent = 'Descarregar';
+            actionButton.addEventListener('click', () => {
+              inventories.pharmacy.push(product);
+              inventory.splice(index, 1);
+              renderProducts();
+            });
+          }
+
+          productItem.appendChild(actionButton);
+
+          // Botão de remoção
+          const removeButton = document.createElement('button');
+          removeButton.textContent = 'Remover';
+          removeButton.addEventListener('click', () => {
+            inventory.splice(index, 1);
+            renderProducts();
+          });
+
+          productItem.appendChild(removeButton);
+          productList.appendChild(productItem);
+        });
+      }
+    }
+
+    document.getElementById('productForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const locationSelect = document.getElementById('locationSelect').value;
+      const productName = document.getElementById('productName').value;
+      const expiryDate = document.getElementById('expiryDate').value;
+
+      // Adicionar o produto ao local selecionado
+      inventories[locationSelect].push({ name: productName, expiryDate });
+      renderProducts();
+
+      // Limpar o formulário
+      document.getElementById('productName').value = '';
+      document.getElementById('expiryDate').value = '';
+    });
+
+    // Renderizar os estoques iniciais
+    renderProducts();
+  </script>
+</body>
+</html>
